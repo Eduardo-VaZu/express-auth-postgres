@@ -1,0 +1,71 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Rol {
+  id         Int          @id @default(autoincrement()) @map("id_rol")
+  nombre     String       @unique @map("nombre_rol")
+  usuarios   Usuario[]
+  permisos   RolPermiso[] // Relación explícita M:N
+
+  @@map("tbl_rol")
+}
+
+model Permiso {
+  id     Int          @id @default(autoincrement()) @map("id_permiso")
+  nombre String       @unique @map("nombre")
+  roles  RolPermiso[] // Relación explícita M:N
+
+  @@map("tbl_permiso")
+}
+
+// Tabla intermedia explícita para M:N entre Rol y Permiso
+model RolPermiso {
+  idRol     Int      @map("id_rol")
+  idPermiso Int      @map("id_permiso")
+  rol       Rol      @relation(fields: [idRol], references: [id])
+  permiso   Permiso  @relation(fields: [idPermiso], references: [id])
+
+  @@id([idRol, idPermiso])
+  @@map("tbl_rol_permiso")
+}
+
+model Usuario {
+  id                 Int      @id @default(autoincrement()) @map("id_usuario")
+  nombre             String   @map("nombre")
+  apellidoPaterno    String   @map("apellido_paterno")
+  apellidoMaterno    String   @map("apellido_materno")
+  email              String   @unique @map("email")
+  fechaCreacion      DateTime @default(now()) @map("fecha_creacion")
+  estadoUsuario      Int      @map("estado_usuario")
+  idRol              Int      @map("id_rol")
+  
+  // Auditoría (basado en el diagrama)
+  fechaModificacion  DateTime? @updatedAt @map("fecha_modificacion")
+  usuarioCreacion    String?   @map("usuario_creacion")
+  usuarioModificacion String?  @map("usuario_modificacion")
+  version            Int?      @default(1) @map("version")
+
+  // Relaciones
+  rol                Rol                   @relation(fields: [idRol], references: [id])
+  credencial         CredencialTradicional?
+
+  @@map("tbl_usuario")
+}
+
+model CredencialTradicional {
+  idUsuario    Int    @id @map("id_usuario")
+  passwordHash String @map("password_hash")
+  
+  // Relación 1:1 con Usuario
+  usuario      Usuario @relation(fields: [idUsuario], references: [id])
+
+  @@map("tbl_credencial_tradicional")
+}
