@@ -22,12 +22,16 @@ export const createRole = async (req: Request, res: Response) => {
     }
 }
 
-export const getRoles = async (req: Request, res: Response)=>{
+export const getRoles = async (req: Request, res: Response) => {
     try {
         const roles = await prisma.rol.findMany()
-        res.status(200).json({ message: "Roles obtenidos exitosamente", roles })
+        
+        return res.status(200).json({ 
+            message: roles.length > 0 ? "Roles obtenidos exitosamente" : "No hay roles registrados", 
+            roles 
+        })
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Error al obtener los roles" })
+        console.error('Error al obtener roles:', error);
+        return res.status(500).json({ message: "Error interno del servidor" })
     }
 }
