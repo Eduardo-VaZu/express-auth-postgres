@@ -14,9 +14,6 @@
   "author": "",
   "license": "ISC",
   "type": "module",
-  "prisma": {
-    "config": "prisma.config.ts"
-  },
   "dependencies": {
     "@prisma/client": "^7.2.0",
     "bcrypt": "^6.0.0",
