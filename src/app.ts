@@ -20,10 +20,8 @@ app.use(express.json());
 
 // --- Rutas ---
 import { roleRouter } from './routes/role.routes.js';
-// import authRoutes from './routes/auth.routes.js';
 
 app.use('/api/roles', roleRouter);
-// app.use('/api/auth', authRoutes);
 
 // --- Rutas de prueba ---
 app.get('/health', (req, res) => {
